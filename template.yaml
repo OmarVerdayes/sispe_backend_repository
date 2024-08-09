@@ -1,0 +1,482 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  API de SISPE para la materia de Desarrollo Web Integral
+
+Globals:
+  Function:
+    Timeout: 120
+    MemorySize: 256
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaBasicExecution
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+        - PolicyName: CognitoUserPoolAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminCreateUser
+                  - cognito-idp:AdminGetUser
+                  - cognito-idp:AdminDeleteUser
+                Resource: arn:aws:cognito-idp:us-east-1:137237570477:userpool/us-east-1_hpKh8IecL
+
+  UserApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: UserApi
+      StageName: Prod
+
+  CategoryApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: CategoryApi
+      StageName: Prod
+
+  RatingApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: RatingApi
+      StageName: Prod
+
+  SubscriptionApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: SubscriptionApi
+      StageName: Prod
+
+  FilmsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: FilmsApi
+      StageName: Prod
+
+  FavoritesApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: FavoritesApi
+      StageName: Prod
+
+  CreateFavoriteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: create_favorite/
+      Handler: create_favorite.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        CreateFavorite:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FavoritesApi
+            Path: /favorite
+            Method: POST
+
+  CreateFilmFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: create_film/
+      Handler: create_film.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        CreateFilm:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /film
+            Method: POST
+
+  CreateRatingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: create_rateing/
+      Handler: create_rateing.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        CreateRating:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RatingApi
+            Path: /rating
+            Method: POST
+
+  CreateSubscriptionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: create_subscription/
+      Handler: create_subscription.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        CreateSubscription:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SubscriptionApi
+            Path: /subscription
+            Method: POST
+
+  CreateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: insert_user_pool/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        CreateUser:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UserApi
+            Path: /register_user
+            Method: POST
+
+  DeleteFavoriteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: delete_favorite/
+      Handler: delete_favorite.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        DeleteFavorite:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FavoritesApi
+            Path: /favorite
+            Method: DELETE
+
+  DeleteFilmFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: delete_film/
+      Handler: delete_film.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        DeleteFilm:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /film/{film_id}
+            Method: DELETE
+
+  DeleteRatingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: delete_rateing/
+      Handler: delete_rateing.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        DeleteRating:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RatingApi
+            Path: /rating/{id}
+            Method: DELETE
+
+  GetCategoriesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_categories/
+      Handler: get_categories.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetCategories:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CategoryApi
+            Path: /category
+            Method: GET
+
+  GetCategorizedFilmsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_category_films_by_film_id/
+      Handler: get_category_films_by_film_id.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetCategorizedFilms:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /films/category/{film_id}
+            Method: GET
+
+  GetFavoritesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_favorites/
+      Handler: get_favorites.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetFavorites:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FavoritesApi
+            Path: /favorites/{userId}
+            Method: GET
+
+  GetFilmsByCategoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_films_by_fk_category/
+      Handler: get_films_by_fk_category.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetFilmsByCategory:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /films/fk_category/{fk_category}
+            Method: GET
+
+  GetFilmByNameFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_film_by_name/
+      Handler: get_film_by_name.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetFilmByName:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /films/title/{title}
+            Method: GET
+
+  GetAllFilmsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_films/
+      Handler: get_films.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetAllFilms:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /films
+            Method: GET
+
+  OrderFilmsByCategoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_films_by_category/
+      Handler: get_films_by_category.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        OrderFilmsByCategory:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /films/category/
+            Method: GET
+
+
+
+  UpdateFilmFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: update_film/
+      Handler: update_film.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        UpdateFilm:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /film
+            Method: PUT
+
+  UpdateRatingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: update_rateing/
+      Handler: update_rateing.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        UpdateRating:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RatingApi
+            Path: /rating/edit/{id}
+            Method: PUT
+
+  GetRatingsByFilm:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_rateing_by_film_id/
+      Handler: get_rateing_by_film_id.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetRatingsByFilm:
+          Type: Api
+          Properties:
+            RestApiId: !Ref RatingApi
+            Path: /ratings/{film_id}
+            Method: GET
+
+  GetRandomFeedbackFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: sort_random_films/
+      Handler: sort_random_films.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetRandomFeedback:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /films/random
+            Method: GET
+
+  GetUserByEmailFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_user_by_email/
+      Handler: get_user_by_email.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        GetUserByEmail:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UserApi
+            Path: /user/{email}
+            Method: GET
+
+  RecoverPasswordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: recover_password/
+      Handler: recover_password.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        RecoverPassword:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UserApi
+            Path: /user/recover_password
+            Method: POST
+
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: set_login/
+      Handler: set_login.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        Login:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UserApi
+            Path: /login
+            Method: POST
+
+  UpdatePasswordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: set_password/
+      Handler: set_password.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        UpdatePassword:
+          Type: Api
+          Properties:
+            RestApiId: !Ref UserApi
+            Path: /change_password
+            Method: PUT
+
+
+Outputs:
+  UserApiUrl:
+    Description: "URL for the User API"
+    Value: !Sub "https://${UserApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+  CategoryApiUrl:
+    Description: "URL for the Category API"
+    Value: !Sub "https://${CategoryApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+  RatingApiUrl:
+    Description: "URL for the Rating API"
+    Value: !Sub "https://${RatingApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+  SubscriptionApiUrl:
+    Description: "URL for the Subscription API"
+    Value: !Sub "https://${SubscriptionApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+  FilmsApiUrl:
+    Description: "URL for the Films API"
+    Value: !Sub "https://${FilmsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+  FavoritesApiUrl:
+    Description: "URL for the Favorites API"
+    Value: !Sub "https://${FavoritesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+
+  LambdaExecutionRoleArn:
+    Description: "ARN of the Lambda Execution Role"
+    Value: !GetAtt LambdaExecutionRole.Arn
