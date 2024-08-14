@@ -1,0 +1,281 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      # Instalación de dependencias
+      - name: Install dependencies for create_favorite
+        run: |
+          cd create_favorite
+          pip install -r requirements.txt
+      - name: Install dependencies for create_film
+        run: |
+          cd create_film
+          pip install -r requirements.txt
+      - name: Install dependencies for create_rating
+        run: |
+          cd create_rateing
+          pip install -r requirements.txt
+      - name: Install dependencies for create_subscription
+        run: |
+          cd create_subscription
+          pip install -r requirements.txt
+      - name: Install dependencies for create_user
+        run: |
+          cd insert_user_pool
+          pip install -r requirements.txt
+      - name: Install dependencies for delete_favorite
+        run: |
+          cd delete_favorite
+          pip install -r requirements.txt
+      - name: Install dependencies for delete_film
+        run: |
+          cd delete_film
+          pip install -r requirements.txt
+      - name: Install dependencies for delete_rating
+        run: |
+          cd delete_rateing
+          pip install -r requirements.txt
+      - name: Install dependencies for get_categories
+        run: |
+          cd get_categories
+          pip install -r requirements.txt
+      - name: Install dependencies for get_categorized_films
+        run: |
+          cd get_category_films_by_film_id
+          pip install -r requirements.txt
+      - name: Install dependencies for get_favorites
+        run: |
+          cd get_favorites
+          pip install -r requirements.txt
+      - name: Install dependencies for get_films_by_category
+        run: |
+          cd get_films_by_fk_category
+          pip install -r requirements.txt
+      - name: Install dependencies for get_film_by_name
+        run: |
+          cd get_film_by_name
+          pip install -r requirements.txt
+      - name: Install dependencies for get_all_films
+        run: |
+          cd get_films
+          pip install -r requirements.txt
+      - name: Install dependencies for sorted_films_by_category
+        run: |
+          cd get_films_by_category
+          pip install -r requirements.txt
+      - name: Install dependencies for get_ratings_by_film
+        run: |
+          cd get_rateing_by_film_id
+          pip install -r requirements.txt
+      - name: Install dependencies for get_user_by_email
+        run: |
+          cd get_user_by_email
+          pip install -r requirements.txt
+      - name: Install dependencies for recover_password
+        run: |
+          cd recover_password
+          pip install -r requirements.txt
+      - name: Install dependencies for login
+        run: |
+          cd set_login
+          pip install -r requirements.txt
+      - name: Install dependencies for set_password
+        run: |
+          cd set_password
+          pip install -r requirements.txt
+      - name: Install dependencies for sort_random_films
+        run: |
+          cd sort_random_films
+          pip install -r requirements.txt
+      - name: Install dependencies for update_film
+        run: |
+          cd update_film
+          pip install -r requirements.txt
+      - name: Install dependencies for update_rating
+        run: |
+          cd update_rateing
+          pip install -r requirements.txt
+      - name: Install dependencies for update_user
+        run: |
+          cd update_user
+          pip install -r requirements.txt  
+
+      # Ejecución de escaneo con SonarCloud
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: .
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy_lambda:
+    name: Deploy Lambda to AWS
+    runs-on: ubuntu-latest
+    needs: sonarcloud
+    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+
+      - name: Set up SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      # Instalación de dependencias
+      - name: Install dependencies for create_favorite
+        run: |
+          cd create_favorite
+          pip install -r requirements.txt
+      - name: Install dependencies for create_film
+        run: |
+          cd create_film
+          pip install -r requirements.txt
+      - name: Install dependencies for create_rating
+        run: |
+          cd create_rateing
+          pip install -r requirements.txt
+      - name: Install dependencies for create_subscription
+        run: |
+          cd create_subscription
+          pip install -r requirements.txt
+      - name: Install dependencies for create_user
+        run: |
+          cd insert_user_pool
+          pip install -r requirements.txt
+      - name: Install dependencies for delete_favorite
+        run: |
+          cd delete_favorite
+          pip install -r requirements.txt
+      - name: Install dependencies for delete_film
+        run: |
+          cd delete_film
+          pip install -r requirements.txt
+      - name: Install dependencies for delete_rating
+        run: |
+          cd delete_rateing
+          pip install -r requirements.txt
+      - name: Install dependencies for get_categories
+        run: |
+          cd get_categories
+          pip install -r requirements.txt
+      - name: Install dependencies for get_categorized_films
+        run: |
+          cd get_category_films_by_film_id
+          pip install -r requirements.txt
+      - name: Install dependencies for get_favorites
+        run: |
+          cd get_favorites
+          pip install -r requirements.txt
+      - name: Install dependencies for get_films_by_category
+        run: |
+          cd get_films_by_fk_category
+          pip install -r requirements.txt
+      - name: Install dependencies for get_film_by_name
+        run: |
+          cd get_film_by_name
+          pip install -r requirements.txt
+      - name: Install dependencies for get_all_films
+        run: |
+          cd get_films
+          pip install -r requirements.txt
+      - name: Install dependencies for sorted_films_by_category
+        run: |
+          cd get_films_by_category
+          pip install -r requirements.txt
+      - name: Install dependencies for get_ratings_by_film
+        run: |
+          cd get_rateing_by_film_id
+          pip install -r requirements.txt
+      - name: Install dependencies for get_user_by_email
+        run: |
+          cd get_user_by_email
+          pip install -r requirements.txt
+      - name: Install dependencies for recover_password
+        run: |
+          cd recover_password
+          pip install -r requirements.txt
+      - name: Install dependencies for login
+        run: |
+          cd set_login
+          pip install -r requirements.txt
+      - name: Install dependencies for set_password
+        run: |
+          cd set_password
+          pip install -r requirements.txt
+      - name: Install dependencies for sort_random_films
+        run: |
+          cd sort_random_films
+          pip install -r requirements.txt
+      - name: Install dependencies for update_film
+        run: |
+          cd update_film
+          pip install -r requirements.txt
+      - name: Install dependencies for update_rating
+        run: |
+          cd update_rateing
+          pip install -r requirements.txt
+      - name: Install dependencies for update_user
+        run: |
+          cd update_user
+          pip install -r requirements.txt
+
+      - name: Configure AWS Region
+        run: aws configure set region us-east-1
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Install SAM CLI
+        run: |
+          pip install aws-sam-cli
+
+      - name: Configure AWS CLI
+        run: |
+          mkdir -p ~/.aws
+          echo "[profile sispe]" > ~/.aws/config
+          echo "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/config
+          echo "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/config
+          echo "region=us-east-1" >> ~/.aws/config
+
+      - name: Build SAM application
+        run: sam build --use-container
+
+      - name: Deploy SAM application
+        run: |
+          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name SISPE --capabilities CAPABILITY_IAM
