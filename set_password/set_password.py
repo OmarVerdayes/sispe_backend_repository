@@ -41,7 +41,7 @@ def lambda_handler(event, __):
     user_pool_id = "us-east-1_hpKh8IecL"
     client_id = "42dmr7oq6bkfoufph3q36paqta"
     try:
-
+        conn= db_connection.connect()
         # Parsea el body del evento
         body_parameters = json.loads(event["body"])
         email = body_parameters.get('email')
@@ -74,8 +74,7 @@ def lambda_handler(event, __):
             update_query = users.update().where(users.c.email == email).values(
                 password=new_password
             )
-            conn= db_connection.connect()
-            response = conn.execute(update_query)
+            conn.execute(update_query)
             return {
                 'statusCode': 200,
                 'headers': {
