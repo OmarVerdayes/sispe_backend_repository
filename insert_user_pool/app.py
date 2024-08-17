@@ -78,7 +78,7 @@ def lambda_handler(event, context):
     name = data.get('name')
     lastname = data.get('lastname')
     email = data.get('email')
-    fk_rol = data.get('fkRol')
+    fk_rol = data.get('fk_rol')
     password = generate_password()
     role_name = "cliente"
 
