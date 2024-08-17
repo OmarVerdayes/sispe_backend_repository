@@ -74,11 +74,12 @@ def generate_password(length=8):
 
 def lambda_handler(event, context):
     data = json.loads(event['body'])
+    logger.debug("datos recibidos: ",data)
     user_id = uuid.uuid4().bytes
     name = data.get('name')
     lastname = data.get('lastname')
     email = data.get('email')
-    fk_rol = data.get('fk_rol')
+    fk_rol = data.get('fkRol')
     password = generate_password()
     role_name = "cliente"
 
@@ -91,7 +92,7 @@ def lambda_handler(event, context):
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
             },
-            'body': json.dumps('Faltan datos obligatorios')
+            'body': json.dumps('Faltan datos obligatorios',data)
         }
 
     try:
