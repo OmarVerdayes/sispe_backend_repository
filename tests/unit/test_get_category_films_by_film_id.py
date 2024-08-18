@@ -16,10 +16,6 @@ class MyTestCase(unittest.TestCase):
 
         response = lambda_handler(event, context)
 
-        expected_response = {
-            'statusCode': 400,
-            'body': json.dumps('film_id parameter is required')
-        }
         self.assertEqual(response["statusCode"], 400)
         self.assertEqual(response["body"], '"film_id parameter is required"')
 
@@ -52,7 +48,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(response["body"], '"No films found in the category"')
 
     @patch('get_category_films_by_film_id.get_category_films_by_film_id.db_connection')
-    def test_film_not_found_with_headers(self, mock_db_connection):
+    def test_film_not_found_response(self, mock_db_connection):
         event = {
             'pathParameters': {
                 'film_id': '00000000000000000000000000000000'

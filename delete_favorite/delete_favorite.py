@@ -171,5 +171,5 @@ def lambda_handler(event, context):
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
             },
-            'body':json.dumps(f'Formato invalido')
+            'body':json.dumps('Formato invalido')
         }

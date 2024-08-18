@@ -29,6 +29,5 @@ class TestApp(unittest.TestCase):
         ]
         result = lambda_handler(mock_body, None)
         self.assertEqual(result["statusCode"], 400)
-        body = json.loads(result["body"])
 
         print(result)

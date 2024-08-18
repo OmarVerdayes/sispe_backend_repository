@@ -2,14 +2,13 @@ from unittest.mock import patch, MagicMock
 import unittest
 import json
 from create_favorite.create_favorite import lambda_handler
-from create_favorite.sqlalchemy.exc import SQLAlchemyError
 
 
 class TestLambdaHandler(unittest.TestCase):
 
     @patch.dict("os.environ", {"DB_USER": "user", "DB_PASSWORD": "password", "DB_NAME": "database", "DB_HOST": "host"})
     @patch("create_favorite.create_favorite.db_connection.connect")
-    def test_lambda_handler_success(self, mock_connect):
+    def test_lambda_handler_unbody(self, mock_connect):
         # Setup mock
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
@@ -165,7 +164,7 @@ class TestLambdaHandler(unittest.TestCase):
 
     @patch.dict("os.environ", {"DB_USER": "user", "DB_PASSWORD": "password", "DB_NAME": "database", "DB_HOST": "host"})
     @patch("create_favorite.create_favorite.db_connection.connect")
-    def test_lambda_handler_success(self, mock_connect):
+    def test_lambda_handler_success1(self, mock_connect):
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
 

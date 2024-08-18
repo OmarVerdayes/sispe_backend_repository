@@ -44,7 +44,6 @@ users = Table('users', metadata,
 def lambda_handler(event, __):
     client = boto3.client('cognito-idp', region_name='us-east-1', aws_access_key_id=AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
-    user_pool_id = "us-east-1_hpKh8IecL"
     client_id = "42dmr7oq6bkfoufph3q36paqta"
 
     try:
@@ -89,7 +88,7 @@ def lambda_handler(event, __):
             update_query = users.update().where(users.c.email == email).values(
                 password=new_password
             )
-            result = session.execute(update_query)
+            session.execute(update_query)
             session.commit()
             session.close()
 
