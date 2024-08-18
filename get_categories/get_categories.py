@@ -22,7 +22,11 @@ metadata = MetaData()
 categories = Table('categories', metadata,
                    Column('category_id', BINARY(16), primary_key=True),
                    Column('name', String(45), nullable=False))
-
+globalHeaders = {
+    "Access-Control-Allow-Headers": 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
 def lambda_handler(event, context):
     try:
         logger.info(f"DB_USER: {DB_USER}; DB_PASSWORD: {DB_PASSWORD}; DB_NAME: {DB_NAME}; DB_HOST{DB_HOST}")
@@ -35,21 +39,13 @@ def lambda_handler(event, context):
         if not category_list:
             return {
                 'statusCode': 404,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('No categories found')
             }
         
         return {
             'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps(category_list)
         }
         
@@ -57,11 +53,7 @@ def lambda_handler(event, context):
         logger.error(f"Database error: {e}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Internal server error. Could not fetch categories.')
         }
         
@@ -69,10 +61,6 @@ def lambda_handler(event, context):
         logger.error(f"Unexpected error: {e}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Internal server error.')
         }

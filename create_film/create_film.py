@@ -39,6 +39,12 @@ films = Table('films', metadata,
               Column('banner', String(255), nullable=True)
               )
 
+globalHeaders = {
+    "Access-Control-Allow-Headers": 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
+
 # Función Lambda para crear una nueva película
 def lambda_handler(event, context):
     try:
@@ -61,11 +67,7 @@ def lambda_handler(event, context):
             conn.close()
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Category ID does not exist')
             }
 
@@ -84,43 +86,27 @@ def lambda_handler(event, context):
         conn.close()
         return {
             'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Film created')
         }
     except SQLAlchemyError as e:
         logger.error(f"Error creating film: {e}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Error creating film')
         }
     except json.JSONDecodeError as e:
         logger.error(f"Invalid JSON format: {e}")
         return {
             'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Invalid JSON format')
         }
     except KeyError as e:
         logger.error(f"Missing required key in JSON: {e}")
         return {
             'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps(f'Missing required key: {e}')
         }
