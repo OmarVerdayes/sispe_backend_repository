@@ -56,7 +56,7 @@ def lambda_handler(event, context):
         # Query para obtener películas
         film_query = films.select().with_only_columns(
             films.c.film_id, films.c.title, films.c.description, films.c.length, films.c.status, films.c.fk_category,
-            films.c.front_page, films.c.file, films.c.banner).where(films.c.status == 'Activo')
+            films.c.front_page, films.c.file, films.c.banner)
 
         film_result = conn.execute(film_query).mappings()
         films_by_category = {}

@@ -322,6 +322,21 @@ Resources:
             Path: /films/category/
             Method: GET
 
+  OrderFilmsByCategoryAllFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_films_by_category_all/
+      Handler: get_films_by_category_all.lambda_handler
+      Runtime: python3.9
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      Events:
+        OrderFilmsByCategoryAll:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FilmsApi
+            Path: /films/category/all
+            Method: GET
 
 
   UpdateFilmFunction:

@@ -44,7 +44,7 @@ def lambda_handler(event, context):
 
         query = select(
             films.c.film_id, films.c.title, films.c.description, films.c.length, films.c.status, films.c.fk_category,
-            films.c.front_page, films.c.file, films.c.banner).order_by(func.rand()).limit(10)
+            films.c.front_page, films.c.file, films.c.banner).where(films.c.status == 'Activo').order_by(func.rand()).limit(10)
 
         result = conn.execute(query)
         film_list = [
