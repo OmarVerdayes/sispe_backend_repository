@@ -43,6 +43,12 @@ users = Table('users', metadata,
               Index('fk_rol_idx', 'fk_rol'),
               Index('fk_subscription_idx', 'fk_subscription'))
 
+globalHeaders = {
+    "Access-Control-Allow-Headers": 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
+
 def lambda_handler(event, context):
     try:
         logger.info("Fetching rateings for a specific film")
@@ -52,11 +58,7 @@ def lambda_handler(event, context):
         if not film_id:
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Parameter film_id is required')
             }
 
@@ -66,11 +68,7 @@ def lambda_handler(event, context):
         except binascii.Error:
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Invalid film_id format')
             }
 
@@ -105,42 +103,26 @@ def lambda_handler(event, context):
         if not rateing_list:
             return {
                 'statusCode': 404,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('No rateings found for the given film')
             }
 
         return {
             'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps(rateing_list)
         }
     except SQLAlchemyError as e:
         logger.error(f"Error fetching rateings: {e}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Error fetching rateings')
         }
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Internal server error')
         }

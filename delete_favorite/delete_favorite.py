@@ -48,17 +48,19 @@ favorites = Table('favorites',metadata,
 def is_hex(s):
     return len(s) == 32 and all(c in '0123456789abcdefABCDEF' for c in s)
 
+globalHeaders = {
+    "Access-Control-Allow-Headers": 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
+
 #Funcion Lambda para quitar una pelicula de la lista de favoritos
 def lambda_handler(event, context):
     try:
         if event.get('body') is None:
             return{
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Entrada invalida, cuerpo no encontrado')
             }
 
@@ -71,22 +73,14 @@ def lambda_handler(event, context):
         if not fk_user and not fk_film:
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('usuario y pelicula necesario')
             }
 
         if not is_hex(fk_user) or not is_hex(fk_film):
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('ID de usuario o película no es válido')
             }
 
@@ -102,11 +96,7 @@ def lambda_handler(event, context):
             conn.close()
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers':  globalHeaders,
                 'body': json.dumps('Usuario no encontrado')
             }
 
@@ -124,11 +114,7 @@ def lambda_handler(event, context):
             conn.close()
             return{
                 'statusCode':400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body':json.dumps('Pelicula no esta en la lista de favoritos')
             }
 
@@ -144,32 +130,20 @@ def lambda_handler(event, context):
 
         return{
             'statusCode':200,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body':json.dumps('Se ha eliminado la pelicula de la lista de favoritos')
         }
     except SQLAlchemyError as e:
         logger.error(f'Error deleting favorite: {e}')
         return {
             'statusCode':500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body':json.dumps('Error al eliminar la pelicula de la lista de favoritos')
         }
     except json.JSONDecodeError as e:
         logger.error(f'Invalid JSON format: {e}')
         return{
             'statusCode':400,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body':json.dumps('Formato invalido')
         }

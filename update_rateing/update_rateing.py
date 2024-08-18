@@ -26,6 +26,12 @@ rateings = Table('rateings', metadata,
                  Column('fk_film', BINARY(16), nullable=False),
                  autoload_with=db_connection)
 
+globalHeaders = {
+    "Access-Control-Allow-Headers": 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
+
 # Función Lambda para actualizar un rateing
 def lambda_handler(event, context):
     try:
@@ -46,53 +52,33 @@ def lambda_handler(event, context):
         if result.rowcount:
             return {
                 'statusCode': 200,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Rateing updated')
             }
         else:
             return {
                 'statusCode': 404,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Rateing not found')
             }
     except SQLAlchemyError as e:
         logger.error(f"Error updating rateing: {e}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Error updating rateing')
         }
     except json.JSONDecodeError as e:
         logger.error(f"Invalid JSON format: {e}")
         return {
             'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Invalid JSON format')
         }
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Internal server error')
         }

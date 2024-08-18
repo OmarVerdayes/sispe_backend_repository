@@ -57,6 +57,12 @@ roles = Table('roles', metadata,
               Column('rol_id', BINARY(16), primary_key=True),
               Column('name', String(50), nullable=False))
 
+globalHeaders = {
+    "Access-Control-Allow-Headers": 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
+
 def generate_password(length=8):
     if length < 4:
         raise ValueError("Length of the password should be at least 4")
@@ -87,11 +93,7 @@ def lambda_handler(event, context):
         logger.error("Faltan datos obligatorios en el cuerpo de la solicitud")
         return {
             'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Faltan datos obligatorios',data)
         }
 
@@ -105,11 +107,7 @@ def lambda_handler(event, context):
             logger.error(f"Formato de fk_rol inválido: {str(e)}")
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Formato de fk_rol inválido')
             }
 
@@ -130,11 +128,7 @@ def lambda_handler(event, context):
             logger.error(f"Error al realizar el cobro: {str(e)}")
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps({"error_message": str(e)})
             }
 
@@ -186,11 +180,7 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Usuario registrado, verifica tu correo electrónico')
         }
 
@@ -198,21 +188,13 @@ def lambda_handler(event, context):
         logger.error(f"ClientError: {str(e)}")
         return {
             'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps({"error_message": e.response['Error']['Message']})
         }
     except Exception as e:
         logger.error(f"Error inesperado: {str(e)}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps({"error_message": str(e)})
         }

@@ -70,6 +70,12 @@ def generate_password(length=8):
 def generate_transaction_token():
     return f"ch_{uuid.uuid4().hex[:16].upper()}"
 
+globalHeaders = {
+    "Access-Control-Allow-Headers": 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
+
 def lambda_handler(event, context):
     data = json.loads(event['body'])
     user_id = uuid.uuid4().bytes
@@ -84,11 +90,7 @@ def lambda_handler(event, context):
         logger.error("Faltan datos obligatorios en el cuerpo de la solicitud")
         return {
             'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Faltan datos obligatorios')
         }
 
@@ -102,11 +104,7 @@ def lambda_handler(event, context):
             logger.error(f"Formato de fk_rol inválido: {str(e)}")
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Formato de fk_rol inválido')
             }
 
@@ -162,11 +160,7 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps('Usuario registrado, verifica tu correo electrónico')
         }
 
@@ -174,21 +168,13 @@ def lambda_handler(event, context):
         logger.error(f"ClientError: {str(e)}")
         return {
             'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps({"error_message": e.response['Error']['Message']})
         }
     except Exception as e:
         logger.error(f"Error inesperado: {str(e)}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-            },
+            'headers': globalHeaders,
             'body': json.dumps({"error_message": str(e)})
         }

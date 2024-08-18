@@ -43,6 +43,11 @@ favorites = Table('favorites', metadata,
                   Column('favorite_id', BINARY(16), primary_key=True),
                   Column('fk_user', BINARY(16), ForeignKey('users.user_id'), nullable=False),
                   Column('fk_film', BINARY(16), ForeignKey('films.film_id'), nullable=False))
+globalHeaders = {
+    "Access-Control-Allow-Headers": 'Content-Type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
+    }
 
 def is_hex(s):
     return len(s) == 32 and all(c in '0123456789abcdefABCDEF' for c in s)
@@ -52,11 +57,7 @@ def lambda_handler(event, context):
         if event.get('body') is None:
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Entrada invalida, cuerpo no encontrado')
             }
 
@@ -68,22 +69,14 @@ def lambda_handler(event, context):
         if not fk_user or not fk_film:
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Entrada invalida, usuario o pelicula no encontrados')
             }
 
         if not is_hex(fk_user) or not is_hex(fk_film):
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('El ID de usuario o pelicula no es válido')
             }
 
@@ -99,11 +92,7 @@ def lambda_handler(event, context):
             conn.close()
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Usuario no encontrado')
             }
 
@@ -119,11 +108,7 @@ def lambda_handler(event, context):
             conn.close()
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Película no encontrada o no está activa')
             }
 
@@ -139,11 +124,7 @@ def lambda_handler(event, context):
             conn.close()
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Access-Control-Allow-Headers': 'Content-Type',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE'
-                },
+                'headers': globalHeaders,
                 'body': json.dumps('Película ya agregada a la lista de favoritos')
             }
 
