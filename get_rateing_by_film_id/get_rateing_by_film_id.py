@@ -82,7 +82,6 @@ def lambda_handler(event, context):
             rateing_dict = dict(row)
             # Convertir valores BINARY a cadenas hexadecimales
             rateing_dict['rateing_id'] = binascii.hexlify(rateing_dict['rateing_id']).decode('utf-8')
-            fk_user = binascii.hexlify(rateing_dict['fk_user']).decode('utf-8')
             rateing_dict['fk_film'] = binascii.hexlify(rateing_dict['fk_film']).decode('utf-8')
 
             # Convertir Decimal a float
