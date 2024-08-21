@@ -103,7 +103,8 @@ def lambda_handler(event, context):
         # Obtener los favoritos del usuario
         query = select([favorites.c.fk_film, films.c.title, films.c.description, films.c.length, films.c.status, films.c.front_page, films.c.file, category.c.name.label('category_name')])\
                 .select_from(favorites.join(films, favorites.c.fk_film == films.c.film_id).join(category, films.c.fk_category == category.c.category_id))\
-                .where(favorites.c.fk_user == user_id)
+                .where(favorites.c.fk_user == user_id)\
+                .where(films.c.status == 'Activo')
         result = conn.execute(query)
         rows = result.fetchall()
         conn.close()
